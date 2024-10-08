@@ -33,7 +33,74 @@ const DeliveryList = () => {
     }, []);
     
     /*---훅(useEffect)+이벤트(handle)메소드-------*/
-    
+    const handleSend = (receiptNum) => {
+        console.log('배송중 버튼 클릭');
+        console.log(receiptNum);
+
+        const requestData = {
+            receiptNum: receiptNum,
+            shippingStatus: "배송 중" // Updating status to '탈퇴' (which means withdrawal)
+        };
+
+        axios({
+            method: 'put',
+            url: `${process.env.REACT_APP_API_URL}/api/admin/dilivery/send/${receiptNum}`, 
+            data: requestData, 
+            responseType: 'json' 
+        }).then(response => {
+            console.log("===============================");
+            console.log(response.data);
+            console.log(response.data.result);
+            console.log("===============================");
+
+            if (response.data.result === 'success') {
+                // Remove the updated item from unionList
+                let newArray = unionList.filter((union) => {
+                    return union.receiptNum !== receiptNum;
+                });
+                setUnionList(newArray);
+            } else {
+                alert(response.data.message);
+            }
+        }).catch(error => {
+            console.log(error);
+        });
+    };
+
+    const handleArrive = (receiptNum) => {
+        console.log('배송완료 버튼 클릭');
+        console.log(receiptNum);
+
+        const requestData = {
+            receiptNum: receiptNum,
+            shippingStatus: "배송 완료" // Updating status to '탈퇴' (which means withdrawal)
+        };
+
+        axios({
+            method: 'put',
+            url: `${process.env.REACT_APP_API_URL}/api/admin/dilivery/arrive/${receiptNum}`, 
+            data: requestData, 
+            responseType: 'json' 
+        }).then(response => {
+            console.log("===============================");
+            console.log(response.data);
+            console.log(response.data.result);
+            console.log("===============================");
+
+            if (response.data.result === 'success') {
+                // Remove the updated item from unionList
+                let newArray = unionList.filter((union) => {
+                    return union.receiptNum !== receiptNum;
+                });
+                setUnionList(newArray);
+            } else {
+                alert(response.data.message);
+            }
+        }).catch(error => {
+            console.log(error);
+        });
+    };
+
     return (
         <>
             <Header/>
@@ -66,8 +133,8 @@ const DeliveryList = () => {
                              {/* 반복 구간 */}
                             {unionList.map((union) => {
                                     return (
-                                        <div id="product_item" className="clearfix"  key={union.reciptNum}>
-                                            <img id="sotre_Img" src={`${process.env.REACT_APP_API_URL}/upload/${union.imageSavedName}`} alt="상품이미지"/>
+                                        <div id="product_item" className="clearfix"  key={union.receiptNum}> {/* Corrected the typo here */}
+                                            <img id="store_Img" src={`${process.env.REACT_APP_API_URL}/upload/${union.imageSavedName}`} alt="상품이미지"/>
                                             <div className="hjy_product_info">
                                                 <p><strong>모델명: </strong> {union.productName}</p>
                                                 <p><strong>디스플레이: </strong> {union.displaySize}</p>
@@ -77,27 +144,23 @@ const DeliveryList = () => {
                                             </div>
 
                                             <div className="hjy_buyer_info">
-                                                <p><strong>용량: </strong> {union.shippingStatus}</p>
+                                                <p><strong>상태: </strong> {union.shippingStatus}</p>
                                                 <p><strong>구매자: </strong> {union.userName}</p>
                                                 <p><strong>아이디: </strong> {union.userId}</p>
-                                                <p><strong>주소: </strong> {union.userName}</p>
+                                                <p><strong>주소: </strong> {union.userAddress}</p> {/* Corrected the field */}
                                                 <p><strong>연락처: </strong>{union.userHp}</p>
                                             </div>
                                             <div className="hjy_modify_btn">
-                                                <button type="button">승인</button>
+                                                <button type="button" onClick={() => handleSend(union.receiptNum)}>배송중</button> {/* Corrected here */}
                                             </div>
                                             <div className="hjy_del_btn">
-                                                <button type="button">거부</button>
+                                                <button type="button" onClick={() => handleArrive(union.receiptNum)}>배송완료</button> {/* Corrected here */}
                                             </div>
                                         </div>
                                     );
                                 })}
 
                                 <br />
-                                {/* axios part */}
-
-
-                        
                             
                             {/* //반복구간 */}
                         </div>

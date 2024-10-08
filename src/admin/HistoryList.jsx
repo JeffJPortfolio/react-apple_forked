@@ -95,8 +95,7 @@ const HistoryList = () => {
                                 })}
 
                                 <br />
-                                {/* axios part */}
-                            
+                                {/* axios part */}                            
                             {/* //반복구간 */}
                         </div>
                         {/* //history_list */}
