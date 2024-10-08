@@ -33,6 +33,40 @@ const AdminMain = () => {
                         {/* //aside */}
                         <div className="hjy-grid-container">
                         {/* 매장 관리 요약 */}
+                        
+
+                            {/* 유저 관리 요약 */}
+                            <div className="hjy-list-section">
+                                <div className="hjy-list-header">
+                                    <h3>회원 관리</h3>
+                                    <Link to="/admin/user" rel="noreferrer noopener">더보기</Link>
+                                </div>
+                                <div className="hjy-list-status">
+                                    <p>전체: 0</p>
+                                </div>
+                            </div>
+
+                            {/* 배송 관리 요약 */}
+                            <div className="hjy-list-section">
+                                <div className="hjy-list-header">
+                                    <h3>배송 관리</h3>
+                                    <Link to="/admin/delivery" rel="noreferrer noopener">더보기</Link>
+                                </div>
+                                <div className="hjy-list-status">
+                                    <p>배송중: 0  | 배송완료: 0</p>
+                                </div>
+                            </div>
+
+                            {/* 판매 내역 요약 */}
+                            <div className="hjy-list-section">
+                                <div className="hjy-list-header">
+                                    <h3>판매내역</h3>
+                                    <Link to="/admin/history" rel="noreferrer noopener">더보기</Link>
+                                </div>
+                                <div className="hjy-list-status">
+                                    <p>전체: 0  | 총 수익: 0</p>
+                                </div>
+                            </div>
                             <div className="hjy-section" >
                                 <div className="hjy-header">
                                     <h3>매장 관리</h3>
@@ -92,38 +126,6 @@ const AdminMain = () => {
                                 </div>
                             </div>
 
-                            {/* 유저 관리 요약 */}
-                            <div className="hjy-list-section">
-                                <div className="hjy-list-header">
-                                    <h3>회원 관리</h3>
-                                    <Link to="/admin/user" rel="noreferrer noopener">더보기</Link>
-                                </div>
-                                <div className="hjy-list-status">
-                                    <p>전체: 0</p>
-                                </div>
-                            </div>
-
-                            {/* 배송 관리 요약 */}
-                            <div className="hjy-list-section">
-                                <div className="hjy-list-header">
-                                    <h3>배송 관리</h3>
-                                    <Link to="/admin/delivery" rel="noreferrer noopener">더보기</Link>
-                                </div>
-                                <div className="hjy-list-status">
-                                    <p>배송중: 0  | 배송완료: 0</p>
-                                </div>
-                            </div>
-
-                            {/* 판매 내역 요약 */}
-                            <div className="hjy-list-section">
-                                <div className="hjy-list-header">
-                                    <h3>판매내역</h3>
-                                    <Link to="/admin/history" rel="noreferrer noopener">더보기</Link>
-                                </div>
-                                <div className="hjy-list-status">
-                                    <p>전체: 0  | 총 수익: 0</p>
-                                </div>
-                            </div>
                     </div>
                     </div>
                     {/* //admin_main */}

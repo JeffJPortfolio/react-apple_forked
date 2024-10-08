@@ -84,10 +84,10 @@ const DeliveryList = () => {
                                                 <p><strong>연락처: </strong>{union.userHp}</p>
                                             </div>
                                             <div className="hjy_modify_btn">
-                                                <button type="button"><Link to="/admin/store/modify" rel="noreferrer noopener">수정</Link></button>
+                                                <button type="button">승인</button>
                                             </div>
                                             <div className="hjy_del_btn">
-                                                <button type="button">삭제</button>
+                                                <button type="button">거부</button>
                                             </div>
                                         </div>
                                     );

@@ -16,7 +16,7 @@ const HistoryList = () => {
     const getUnionList = () => {
         axios({
             method: 'get', // put, post, delete                   
-            url: `${process.env.REACT_APP_API_URL}/api/admin/dilivery`,
+            url: `${process.env.REACT_APP_API_URL}/api/admin/history`,
             responseType: 'json' // 수신타입
         }).then(response => {
             console.log(response.data); // 수신데이터
@@ -96,29 +96,6 @@ const HistoryList = () => {
 
                                 <br />
                                 {/* axios part */}
-
-                            <div id="history_item" className="clearfix" >
-                                <img id="sotre_Img" src="/images/iPhone.png" alt="상품이미지"/>
-                                <div className="hjy_history_info">
-                                    <p>
-                                        <strong>모델명: </strong> iPhone 16 Pro
-                                    </p>
-                                    <p>
-                                        <strong>디스플레이: </strong> 15.9cm
-                                    </p>
-                                    <p>
-                                        <strong>색상: </strong> White
-                                    </p>
-                                    <p>
-                                        <strong>가격: </strong> 1,550,000\
-                                    </p>
-                                    <p>
-                                        <strong>용량: </strong> 256GB
-                                    </p>
-                                </div>
-                            </div>
-
-
                             
                             {/* //반복구간 */}
                         </div>

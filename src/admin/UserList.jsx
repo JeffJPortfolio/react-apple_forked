@@ -34,6 +34,42 @@ const UserList = () => {
     }, []);
     /*---훅(useEffect)+이벤트(handle)메소드-------*/
     
+    const handleDel = (userNum) => {
+        console.log('삭제버튼 클릭');
+        console.log(userNum);
+    
+        const requestData = {
+            userNum: userNum,
+            userStatus: "탈퇴" // Updating status to '탈퇴' (which means withdrawal)
+        };
+    
+        axios({
+            method: 'put',  // Correct method for updating user status
+            url: `${process.env.REACT_APP_API_URL}/api/admin/user/${userNum}`, 
+            data: requestData,  // This sends the required body (unionVo fields)
+            responseType: 'json' 
+        }).then(response => {
+            console.log("===============================");
+            console.log(response.data);
+            console.log(response.data.result);
+            console.log("===============================");
+    
+            if (response.data.result === 'success') {
+                // Remove the deleted user from unionList
+                let newArray = unionList.filter((user) => {
+                    return user.userNum !== userNum;
+                });
+                setUnionList(newArray);
+            } else {
+                alert(response.data.message);
+            }
+        }).catch(error => {
+            console.log(error);
+        });
+    };
+    
+
+    
     return (
         <>
             <Header/>
@@ -75,7 +111,7 @@ const UserList = () => {
                                                 <button type="button"><Link to="/admin/store/modify" rel="noreferrer noopener">수정</Link></button>
                                             </div>
                                             <div className="hjy_del_btn">
-                                                <button type="button">삭제</button>
+                                                <button type="button" onClick={() => handleDel(union.userNum)}>삭제</button>
                                             </div>
                                         </div>
                                     );

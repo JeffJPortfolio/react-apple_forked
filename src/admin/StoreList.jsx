@@ -34,13 +34,15 @@ const StoreList = () => {
     }, []);
 
     //삭제버튼 클릭했을 때
-    /*
-    const handleDel = (no) => {
+    
+    const handleDel = (storeNum) => {
         console.log('삭제버튼 클릭');
-        console.log(no);
+        console.log(storeNum);
+
         axios({
-            method: 'delete', // put, post, delete                   
-            url: `${process.env.REACT_APP_API_URL}/api/admin/storelist/${no}`,
+            method: 'put', // put, post, delete                   
+            url: `${process.env.REACT_APP_API_URL}/api/admin/store/${storeNum}`,
+             data: { storeNum: storeNum, storeStatus: '폐업' },
             responseType: 'json' // 수신타입
         }).then(response => {
             console.log("===============================");
@@ -51,7 +53,7 @@ const StoreList = () => {
             if (response.data.result === 'success') {
                 // storeList에서 삭제한 값만 제거된 새로운 배열
                 let newArray = storeList.filter((store) => {
-                    return store.storeNum !== no;
+                    return store.storeNum !== storeNum;
                 });
                 setStoreList(newArray);
             } else {
@@ -61,7 +63,7 @@ const StoreList = () => {
             console.log(error);
         });
     };
-    */
+    
     
     return (
         <>
@@ -116,7 +118,7 @@ const StoreList = () => {
                                                 <button type="button"><Link to="/admin/store/modify" rel="noreferrer noopener">수정</Link></button>
                                             </div>
                                             <div className="hjy_del_btn">
-                                                <button type="button">삭제</button>
+                                                <button type="button" onClick={() => handleDel(store.storeNum)}>삭제</button>
                                             </div>
                                         </div>
                                     );

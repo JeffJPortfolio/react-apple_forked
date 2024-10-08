@@ -1,6 +1,7 @@
 //import 라이브러리
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 import '../css/reset.css';
 import '../css/productList.css';
@@ -9,11 +10,27 @@ import Footer from "../include/Footer";
 
 const ProductList = () => {
 
-    /*---라우터 관련-------------------------------*/
-    
-    /*---상태관리 변수들(값이 변화면 화면 랜더링 )---*/
+    const [productList, setProductList] = useState([]);
 
-    /*---일반 변수--------------------------------*/
+    /*---일반 메소드 -----------------------------*/
+    const getProductList = () => {
+        axios({
+            method: 'get', // put, post, delete                   
+            url: `${process.env.REACT_APP_API_URL}/api/admin/product`,
+            responseType: 'json' // 수신타입
+        }).then(response => {
+            console.log(response.data); // 수신데이터
+            setProductList(response.data.apiData);
+        }).catch(error => {
+            console.log(error);
+        });
+    };
+
+    /*---훅(useEffect)메소드-------*/
+    useEffect(() => {
+        console.log("마운트 됐어요");
+        getProductList(); // 서버에서 데이터 가져오기
+    }, []);
     
     /*---일반 메소드 -----------------------------*/
     
@@ -59,86 +76,41 @@ const ProductList = () => {
                                 <button type="button" className="hjy_add_product_btn"><Link to="/admin/product/add" rel="noreferrer noopener">상품 등록</Link></button>
                             </div>
                             {/* 반복 구간 */}
-                            <div id="product_item" className="clearfix" >
-                                <img id="sotre_Img" src="/images/iPhone.png" alt="상품이미지"/>
-                                <div className="hjy_product_info">
-                                    <p>
-                                        <strong>모델명: </strong> iPhone 16 Pro
-                                    </p>
-                                    <p>
-                                        <strong>디스플레이: </strong> 15.9cm
-                                    </p>
-                                    <p>
-                                        <strong>색상: </strong> White
-                                    </p>
-                                    <p>
-                                        <strong>가격: </strong> 1,550,000\
-                                    </p>
-                                    <p>
-                                        <strong>용량: </strong> 256GB
-                                    </p>
-                                </div>
-                                <div className="hjy_edit_btns">
-                                    <button type="button"><Link to="/admin/product/modify" rel="noreferrer noopener">수정</Link></button>
-                                </div>
-                                <div className="hjy_del_btn">
-                                    <button type="button">삭제</button>
-                                </div>
-                            </div>
+                            {/* axios part */}
+                            {productList.map((product) => {
+                                    return (
+                                        <div id="product_item" className="clearfix"  key={product.productNum}>
+                                            <img id="sotre_Img" src={`${process.env.REACT_APP_API_URL}/upload/${product.infoImageSavedName}`} alt="상품이미지"/>
+                                            <div className="hjy_product_info">
+                                                <p>
+                                                    <strong>모델명: </strong> {product.productName}
+                                                </p>
+                                                <p>
+                                                    <strong>디스플레이: </strong> {product.displaySize}
+                                                </p>
+                                                <p>
+                                                    <strong>색상: </strong> {product.colorName}
+                                                </p>
+                                                <p>
+                                                    <strong>가격: </strong> {product.productPrice}
+                                                </p>
+                                                <p>
+                                                    <strong>용량: </strong>{product.storageSize}
+                                                </p>
+                                            </div>
+                                            <div className="hjy_edit_btns">
+                                                <button type="button"><Link to="/admin/product/modify" rel="noreferrer noopener">수정</Link></button>
+                                            </div>
+                                            <div className="hjy_del_btn">
+                                                <button type="button">삭제</button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
 
-                            <div id="product_item" className="clearfix" >
-                                <img id="sotre_Img" src="/images/iPhone.png" alt="상품이미지"/>
-                                <div className="hjy_product_info">
-                                    <p>
-                                        <strong>모델명: </strong> iPhone 16 Pro
-                                    </p>
-                                    <p>
-                                        <strong>디스플레이: </strong> 15.9cm
-                                    </p>
-                                    <p>
-                                        <strong>색상: </strong> White
-                                    </p>
-                                    <p>
-                                        <strong>가격: </strong> 1,550,000\
-                                    </p>
-                                    <p>
-                                        <strong>용량: </strong> 256GB
-                                    </p>
-                                </div>
-                                <div className="hjy_edit_btns">
-                                    <button type="button"><Link to="/admin/product/modify" rel="noreferrer noopener">수정</Link></button>
-                                </div>
-                                <div className="hjy_del_btn">
-                                    <button type="button">삭제</button>
-                                </div>
-                            </div>
+                                <br />
+                                {/* axios part */}
 
-                            <div id="product_item" className="clearfix" >
-                                <img id="sotre_Img" src="/images/iPhone.png" alt="상품이미지"/>
-                                <div className="hjy_product_info">
-                                    <p>
-                                        <strong>모델명: </strong> iPhone 16 Pro
-                                    </p>
-                                    <p>
-                                        <strong>디스플레이: </strong> 15.9cm
-                                    </p>
-                                    <p>
-                                        <strong>색상: </strong> White
-                                    </p>
-                                    <p>
-                                        <strong>가격: </strong> 1,550,000\
-                                    </p>
-                                    <p>
-                                        <strong>용량: </strong> 256GB
-                                    </p>
-                                </div>
-                                <div className="hjy_edit_btns">
-                                    <button type="button"><Link to="/admin/product/modify" rel="noreferrer noopener">수정</Link></button>
-                                </div>
-                                <div className="hjy_del_btn">
-                                    <button type="button">삭제</button>
-                                </div>
-                            </div>
                             
                             {/* //반복구간 */}
                         </div>
