@@ -110,14 +110,3 @@
 #history .hjy_history_info strong {
     font-weight: bold;
 }
-/* 구매자 정보 */
-#history .hjy_buyer_info {
-    flex: 1;
-    font-size: 16px;
-    padding-right: 20px;
-    
-}
-
-#history .hjy_buyer_info p {
-    margin-bottom: 8px;
-}

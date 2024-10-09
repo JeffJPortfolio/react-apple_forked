@@ -87,6 +87,11 @@ const AdminMain = () => {
             // Calculate the sum of totalPrice
             const sum = response.data.apiData.reduce((acc, item) => acc + item.totalPrice, 0);
             setTotalPriceSum(sum); // Set the state with the calculated sum
+
+            console.log('배송 준비중:', filteredData1);
+console.log('배송 중:', filteredData2);
+
+
         }).catch(error => {
             console.log(error);
         });
@@ -119,6 +124,7 @@ const AdminMain = () => {
         getUserCount();
         console.log("마운트 됐어요");
         getDelilverListData();
+        
 
     }, []);
 
