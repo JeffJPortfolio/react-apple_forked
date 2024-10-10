@@ -1,6 +1,6 @@
 //import 라이브러리
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import '../css/reset.css';
@@ -12,6 +12,17 @@ const StoreList = () => {
 
     /*---상태관리 변수들(값이 변화면 화면 랜더링 )---*/
     const [storeList, setStoreList] = useState([]);
+
+    const navigate = useNavigate();  // 페이지 이동을 위한 useNavigate 추가
+    const authUser = JSON.parse(localStorage.getItem('authUser'));  // authUser 정보 가져오기
+
+    // 관리자인지 확인하여 관리자 아닌 경우 리다이렉트
+    useEffect(() => {
+        if (!authUser || authUser.userStatus !== '관리자') {
+            // alert("관리자만 접근할 수 있습니다.");
+            navigate("/");  // 메인 페이지로 리다이렉트
+        }
+    }, [authUser, navigate]);
 
     /*---일반 메소드 -----------------------------*/
     const getStoreList = () => {
@@ -83,7 +94,7 @@ const StoreList = () => {
                                     <li><Link to="/admin/store" rel="noreferrer noopener">매장 관리</Link></li>
                                     <li><Link to="/admin/product" rel="noreferrer noopener">상품 관리</Link></li>
                                     <li><Link to="/admin/user" rel="noreferrer noopener">유저 관리</Link></li>
-                                    <li><Link to="/admin/dilivery" rel="noreferrer noopener">배송 관리</Link></li>
+                                    <li><Link to="/admin/delivery" rel="noreferrer noopener">배송 관리</Link></li>
                                     <li><Link to="/admin/history" rel="noreferrer noopener">판매 관리</Link></li>
                                 </ul>
                             </div>
@@ -115,7 +126,7 @@ const StoreList = () => {
                                                 </p>
                                             </div>
                                             <div className="hjy_modify_btn">
-                                                <button type="button"><Link to="/admin/store/modify" rel="noreferrer noopener">수정</Link></button>
+                                                <button type="button"><Link to={`/admin/store/modify?storeNum=${store.storeNum}`} rel="noreferrer noopener">수정</Link></button>
                                             </div>
                                             <div className="hjy_del_btn">
                                                 <button type="button" onClick={() => handleDel(store.storeNum)}>삭제</button>

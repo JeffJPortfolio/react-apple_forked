@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';  // useNavigate 추가
 import axios from 'axios';
 
 // css
@@ -18,15 +18,24 @@ const AdminMain = () => {
     const [waitingCount, setWaitingCount] = useState(0);
     const [deliveringCount, setDeliveringCount] = useState(0);
 
+    const navigate = useNavigate();  // 페이지 이동을 위한 useNavigate 추가
+    const authUser = JSON.parse(localStorage.getItem('authUser'));  // authUser 정보 가져오기
+
+    // 관리자인지 확인하여 관리자 아닌 경우 리다이렉트
+    useEffect(() => {
+        if (!authUser || authUser.userStatus !== '관리자') {
+            // alert("관리자만 접근할 수 있습니다.");
+            navigate("/");  // 메인 페이지로 리다이렉트
+        }
+    }, [authUser, navigate]);
+
     /*---일반 메소드 -----------------------------*/
     const getStoreList = () => {
         axios({
-            method: 'get', // put, post, delete
+            method: 'get', 
             url: `${process.env.REACT_APP_API_URL}/api/admin/store`,
-            responseType: 'json' // 수신타입
+            responseType: 'json'
         }).then(response => {
-            console.log(response.data); // 수신데이터
-            // Slice the last 3 items
             const limitedData = response.data.apiData.slice(-3);
             setStoreList(limitedData);
         }).catch(error => {
@@ -36,12 +45,10 @@ const AdminMain = () => {
 
     const getProductList = () => {
         axios({
-            method: 'get', // put, post, delete                   
+            method: 'get', 
             url: `${process.env.REACT_APP_API_URL}/api/admin/product`,
-            responseType: 'json' // 수신타입
+            responseType: 'json'
         }).then(response => {
-            console.log(response.data); // 수신데이터
-
             const limitedData = response.data.apiData.slice(-3);
             setProductList(limitedData);
         }).catch(error => {
@@ -51,19 +58,15 @@ const AdminMain = () => {
 
     const getHistoryListData = () => {
         axios({
-            method: 'get', // put, post, delete
+            method: 'get', 
             url: `${process.env.REACT_APP_API_URL}/api/admin/history`,
-            responseType: 'json' // 수신타입
+            responseType: 'json'
         }).then(response => {
-            console.log(response.data); // 수신데이터
-    
-            // Get the count based on the length of the returned array
             const count = response.data.apiData.length;
             setHistoryCount(count);
     
-            // Calculate the sum of totalPrice
             const sum = response.data.apiData.reduce((acc, item) => acc + item.totalPrice, 0);
-            setTotalPriceSum(sum); // Set the state with the calculated sum
+            setTotalPriceSum(sum);
         }).catch(error => {
             console.log(error);
         });
@@ -71,27 +74,18 @@ const AdminMain = () => {
 
     const getDelilverListData = () => {
         axios({
-            method: 'get', // put, post, delete
-            url: `${process.env.REACT_APP_API_URL}/api/admin/dilivery`,
-            responseType: 'json' // 수신타입
+            method: 'get', 
+            url: `${process.env.REACT_APP_API_URL}/api/admin/delivery`,
+            responseType: 'json'
         }).then(response => {
-            console.log(response.data); // 수신데이터
-            
             const filteredData1 = response.data.apiData.filter(item => item.shippingStatus === '배송 준비중');
             setWaitingCount(filteredData1.length);
 
-            // Get the count based on the length of the returned array
             const filteredData2 = response.data.apiData.filter(item => item.shippingStatus === '배송 중');
             setDeliveringCount(filteredData2.length);
-    
-            // Calculate the sum of totalPrice
+
             const sum = response.data.apiData.reduce((acc, item) => acc + item.totalPrice, 0);
-            setTotalPriceSum(sum); // Set the state with the calculated sum
-
-            console.log('배송 준비중:', filteredData1);
-console.log('배송 중:', filteredData2);
-
-
+            setTotalPriceSum(sum);
         }).catch(error => {
             console.log(error);
         });
@@ -99,14 +93,12 @@ console.log('배송 중:', filteredData2);
 
     const getUserCount = () => {
         axios({
-            method: 'get', // put, post, delete                   
+            method: 'get', 
             url: `${process.env.REACT_APP_API_URL}/api/admin/user`,
-            responseType: 'json' // 수신타입
+            responseType: 'json'
         }).then(response => {
-            console.log(response.data); // 수신데이터
             const count = response.data.apiData.length;
             setUserCount(count);
-
         }).catch(error => {
             console.log(error);
         });
@@ -114,26 +106,16 @@ console.log('배송 중:', filteredData2);
 
     /*---훅(useEffect)메소드-------*/
     useEffect(() => {
-        console.log("마운트 됐어요");
-        getStoreList(); // 서버에서 데이터 가져오기
-        console.log("마운트 됐어요");
-        getProductList(); // 서버에서 데이터 가져오기
-        console.log("마운트 됐어요");
+        getStoreList(); 
+        getProductList();
         getHistoryListData();
-        console.log("마운트 됐어요");
         getUserCount();
-        console.log("마운트 됐어요");
         getDelilverListData();
-        
-
     }, []);
-
-
-    
 
     return (
         <>
-            <Header/>
+            <Header />
 
             <div id="wrap">
                 {/* 컨텐츠 */}
@@ -143,7 +125,7 @@ console.log('배송 중:', filteredData2);
                         {/* aside */}
                         <div id="asides">
                             <h2><Link to="/admin/main" rel="noreferrer noopener">관리자 페이지</Link></h2>
-                            <div id="sub_list"> 
+                            <div id="sub_list">
                                 <ul className='lists'>
                                     <li><Link to="/admin/store" rel="noreferrer noopener">매장 관리</Link></li>
                                     <li><Link to="/admin/product" rel="noreferrer noopener">상품 관리</Link></li>
@@ -173,7 +155,7 @@ console.log('배송 중:', filteredData2);
                                     <Link to="/admin/delivery" rel="noreferrer noopener">더보기</Link>
                                 </div>
                                 <div className="hjy-list-status">
-                                    <p>배송 준비중: {waitingCount} | 배송 중: {deliveringCount}</p>
+                                    <p>배송 준비중: {waitingCount} &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;배송 중: {deliveringCount}</p>
                                 </div>
                             </div>
 
@@ -184,7 +166,7 @@ console.log('배송 중:', filteredData2);
                                     <Link to="/admin/history" rel="noreferrer noopener">더보기</Link>
                                 </div>
                                 <div className="hjy-list-status">
-                                    <p>전체: {historyCount} | 총 수익: {totalPriceSum.toLocaleString()}</p>
+                                    <p>전체: {historyCount} &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; 총 수익: {totalPriceSum.toLocaleString()}</p>
                                 </div>
                             </div>
 
@@ -219,10 +201,10 @@ console.log('배송 중:', filteredData2);
                                     <Link to="/admin/product" rel="noreferrer noopener">더보기</Link>
                                 </div>
                                 <div className="hjy-brief">
-                                    {productList.map((product) => {
+                                    {productList.map((product, index) => {
                                         return (
-                                            <div className="hjy-card" key={product.productNum}>
-                                                <img id="sotre_Img" src={`${process.env.REACT_APP_API_URL}/upload/${product.infoImageSavedName}`} alt="상품이미지"/>
+                                            <div className="hjy-card" key={index}>
+                                                <img id="sotre_Img" src={`${process.env.REACT_APP_API_URL}/upload/${product.imageSavedName}`} alt="상품이미지" />
                                                 <div className="hjy-detail">                                                        
                                                     <p>{product.productName}</p>
                                                 </div>
@@ -237,7 +219,7 @@ console.log('배송 중:', filteredData2);
                     {/* contents */}
                 </div>
             </div>
-            <Footer/>
+            <Footer />
         </>
     );
 };

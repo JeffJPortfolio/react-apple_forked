@@ -1,6 +1,6 @@
 //import 라이브러리
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import '../css/reset.css';
@@ -11,6 +11,17 @@ import Footer from "../include/Footer";
 const HistoryList = () => {
 
     const [unionList, setUnionList] = useState([]);
+
+    const navigate = useNavigate();  // 페이지 이동을 위한 useNavigate 추가
+    const authUser = JSON.parse(localStorage.getItem('authUser'));  // authUser 정보 가져오기
+
+    // 관리자인지 확인하여 관리자 아닌 경우 리다이렉트
+    useEffect(() => {
+        if (!authUser || authUser.userStatus !== '관리자') {
+            // alert("관리자만 접근할 수 있습니다.");
+            navigate("/");  // 메인 페이지로 리다이렉트
+        }
+    }, [authUser, navigate]);
 
     /*---일반 메소드 -----------------------------*/
     const getUnionList = () => {
@@ -59,7 +70,7 @@ const HistoryList = () => {
                                     <li><Link to="/admin/store" rel="noreferrer noopener">매장 관리</Link></li>
                                     <li><Link to="/admin/product" rel="noreferrer noopener">상품 관리</Link></li>
                                     <li><Link to="/admin/user" rel="noreferrer noopener">유저 관리</Link></li>
-                                    <li><Link to="/admin/dilivery" rel="noreferrer noopener">배송 관리</Link></li>
+                                    <li><Link to="/admin/delivery" rel="noreferrer noopener">배송 관리</Link></li>
                                     <li><Link to="/admin/history" rel="noreferrer noopener">판매 관리</Link></li>
                                 </ul>
                             </div>
@@ -71,9 +82,9 @@ const HistoryList = () => {
                         <div id="history_list" >
                             <h2>판매 관리</h2>
                             {/* 반복 구간 */}
-                            {unionList.map((union) => {
+                            {unionList.map((union, index) => {
                                     return (
-                                        <div id="history_item" className="clearfix"   key={union.reciptNum}>
+                                        <div id="history_item" className="clearfix"   key={index}>
                                             <img id="sotre_Img" src={`${process.env.REACT_APP_API_URL}/upload/${union.imageSavedName}`} alt="상품이미지"/>
                                             <div className="hjy_history_info">
                                                 <p><strong>모델명: </strong> {union.productName}</p>
@@ -84,10 +95,10 @@ const HistoryList = () => {
                                             </div>
 
                                             <div className="hjy_buyer_info">
-                                                <p><strong>용량: </strong> {union.shippingStatus}</p>
+                                                <p><strong>배송상태: </strong> {union.shippingStatus}</p>
                                                 <p><strong>구매자: </strong> {union.userName}</p>
                                                 <p><strong>아이디: </strong> {union.userId}</p>
-                                                <p><strong>주소: </strong> {union.userName}</p>
+                                                <p><strong>주소: </strong> {union.userAddress}</p>
                                                 <p><strong>연락처: </strong>{union.userHp}</p>
                                             </div>
                                         </div>

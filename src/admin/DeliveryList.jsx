@@ -1,6 +1,6 @@
 //import 라이브러리
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import '../css/reset.css';
@@ -12,11 +12,22 @@ const DeliveryList = () => {
 
     const [unionList, setUnionList] = useState([]);
 
+    const navigate = useNavigate();  // 페이지 이동을 위한 useNavigate 추가
+    const authUser = JSON.parse(localStorage.getItem('authUser'));  // authUser 정보 가져오기
+
+    // 관리자인지 확인하여 관리자 아닌 경우 리다이렉트
+    useEffect(() => {
+        if (!authUser || authUser.userStatus !== '관리자') {
+            // alert("관리자만 접근할 수 있습니다.");
+            navigate("/");  // 메인 페이지로 리다이렉트
+        }
+    }, [authUser, navigate]);
+
     /*---일반 메소드 -----------------------------*/
     const getUnionList = () => {
         axios({
             method: 'get', // put, post, delete                   
-            url: `${process.env.REACT_APP_API_URL}/api/admin/dilivery`,
+            url: `${process.env.REACT_APP_API_URL}/api/admin/delivery`,
             responseType: 'json' // 수신타입
         }).then(response => {
             console.log(response.data); // 수신데이터
@@ -44,7 +55,7 @@ const DeliveryList = () => {
 
         axios({
             method: 'put',
-            url: `${process.env.REACT_APP_API_URL}/api/admin/dilivery/send/${receiptNum}`, 
+            url: `${process.env.REACT_APP_API_URL}/api/admin/delivery/send/${receiptNum}`, 
             data: requestData, 
             responseType: 'json' 
         }).then(response => {
@@ -84,7 +95,7 @@ const DeliveryList = () => {
 
         axios({
             method: 'put',
-            url: `${process.env.REACT_APP_API_URL}/api/admin/dilivery/arrive/${receiptNum}`, 
+            url: `${process.env.REACT_APP_API_URL}/api/admin/delivery/arrive/${receiptNum}`, 
             data: requestData, 
             responseType: 'json' 
         }).then(response => {
@@ -125,7 +136,7 @@ const DeliveryList = () => {
                                     <li><Link to="/admin/store" rel="noreferrer noopener">매장 관리</Link></li>
                                     <li><Link to="/admin/product" rel="noreferrer noopener">상품 관리</Link></li>
                                     <li><Link to="/admin/user" rel="noreferrer noopener">유저 관리</Link></li>
-                                    <li><Link to="/admin/dilivery" rel="noreferrer noopener">배송 관리</Link></li>
+                                    <li><Link to="/admin/delivery" rel="noreferrer noopener">배송 관리</Link></li>
                                     <li><Link to="/admin/history" rel="noreferrer noopener">판매 관리</Link></li>
                                 </ul>
                             </div>
@@ -137,9 +148,9 @@ const DeliveryList = () => {
                         <div id="product_list" >
                             <h2>배송 관리</h2>
                              {/* 반복 구간 */}
-                            {unionList.map((union) => {
+                            {unionList.map((union, index) => {
                                     return (
-                                        <div id="product_item" className="clearfix"  key={union.receiptNum}> {/* Corrected the typo here */}
+                                        <div id="product_item" className="clearfix product-item"  key={index}> {/* Corrected the typo here */}
                                             <img id="store_Img" src={`${process.env.REACT_APP_API_URL}/upload/${union.imageSavedName}`} alt="상품이미지"/>
                                             <div className="hjy_product_info">
                                                 <p><strong>모델명: </strong> {union.productName}</p>
@@ -156,12 +167,15 @@ const DeliveryList = () => {
                                                 <p><strong>주소: </strong> {union.userAddress}</p> {/* Corrected the field */}
                                                 <p><strong>연락처: </strong>{union.userHp}</p>
                                             </div>
-                                            <div className="hjy_modify_btn">
-                                                <button type="button" onClick={() => handleSend(union.receiptNum)}>배송중</button> {/* Corrected here */}
-                                            </div>
-                                            <div className="hjy_del_btn">
-                                                <button type="button" onClick={() => handleArrive(union.receiptNum)}>배송완료</button> {/* Corrected here */}
-                                            </div>
+                                            <div className="hjy_modify_btns">
+                                            {/* Conditionally render the button based on shippingStatus */}
+                                            {union.shippingStatus === "배송 준비중" && (
+                                                <button className="hjy-mbtn" type="button" onClick={() => handleSend(union.receiptNum)}>배송중</button>
+                                            )}
+                                            {union.shippingStatus === "배송 중" && (
+                                                <button className="hjy-mbtn" type="button" onClick={() => handleArrive(union.receiptNum)}>배송완료</button>
+                                            )}
+                                         </div>
                                         </div>
                                     );
                                 })}

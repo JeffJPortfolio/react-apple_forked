@@ -7,23 +7,45 @@ import '../css/productAddForm4.css';
 import Header from '../include/Header';
 import Footer from "../include/Footer";
 
-const ProductAddForm = () => {
+const ProductAddForm4 = () => {
     const [seriesNum, setSeriesNum] = useState('');
     const [seriesList, setSeriesList] = useState([]); // 시리즈 목록 상태
     const [productNum, setProductNum] = useState(''); 
     const [productList, setProductList] = useState([]); 
-    const [displaySize, setDisplay] = useState('');
+    const [displaySize, setDisplaySize] = useState('');
+    const [displayList, setDisplayList] = useState([]); 
+    const [isSeriesSelected, setIsSeriesSelected] = useState(false); // 시리즈가 선택되었는지 여부
+    const [selectedSeriesName, setSelectedSeriesName] = useState(''); // 선택한 시리즈명 저장
 
-    const navigate = useNavigate();
+    const navigate = useNavigate();  // 페이지 이동을 위한 useNavigate 추가
+    const authUser = JSON.parse(localStorage.getItem('authUser'));  // authUser 정보 가져오기
+
+    // 관리자인지 확인하여 관리자 아닌 경우 리다이렉트
+    useEffect(() => {
+        if (!authUser || authUser.userStatus !== '관리자') {
+            // alert("관리자만 접근할 수 있습니다.");
+            navigate("/");  // 메인 페이지로 리다이렉트
+        }
+    }, [authUser, navigate]);
 
     const handleDisplayName = (e) => {
-        setDisplay(e.target.value);
+        setDisplaySize(e.target.value);
     }
 
     // 시리즈 선택 시 상품 목록 불러오기
     const handleSeriesChange = (e) => {
-        setSeriesNum(e.target.value);
-        getProductList(e.target.value);  
+        const selectedSeriesNum = e.target.value;
+        setSeriesNum(selectedSeriesNum);
+
+        // 선택한 시리즈명 찾기
+        const selectedSeries = seriesList.find(series => series.seriesNum === parseInt(selectedSeriesNum));
+        if (selectedSeries) {
+            setSelectedSeriesName(selectedSeries.seriesName);
+        }
+
+        setIsSeriesSelected(!!selectedSeriesNum); // 시리즈가 선택되면 true, 아니면 false
+        getProductList(selectedSeriesNum);  
+        getDisplayList(selectedSeriesNum);  
     };
 
     // 시리즈 목록을 가져오는 함수
@@ -33,7 +55,6 @@ const ProductAddForm = () => {
             url: `${process.env.REACT_APP_API_URL}/api/series`,
             responseType: 'json',
         }).then(response => {
-            console.log(response.data.apiDat);
             setSeriesList(response.data.apiData); // 응답 데이터로 시리즈 목록 설정
         }).catch(error => {
             console.log(error);
@@ -47,8 +68,20 @@ const ProductAddForm = () => {
             url: `${process.env.REACT_APP_API_URL}/api/product/${seriesNum}`,
             responseType: 'json',
         }).then(response => {
-            console.log(response.data.apiDat);
             setProductList(response.data.apiData); // 응답 데이터로 시리즈 목록 설정
+        }).catch(error => {
+            console.log(error);
+        });
+    };
+
+    // 디스플레이 목록을 가져오는 함수
+    const getDisplayList = (seriesNum) => {
+        axios({
+            method: 'get',
+            url: `${process.env.REACT_APP_API_URL}/api/displays/${seriesNum}`,
+            responseType: 'json',
+        }).then(response => {
+            setDisplayList(response.data.apiData); // 응답 데이터로 시리즈 목록 설정
         }).catch(error => {
             console.log(error);
         });
@@ -59,8 +92,33 @@ const ProductAddForm = () => {
         getSeriesList();
     }, []);
 
+    // 시리즈가 '악세사리'일 때 자동으로 N/A 설정
+    useEffect(() => {
+        if (selectedSeriesName === '악세사리') {
+            setDisplaySize('N/A');
+        } else {
+            setDisplaySize('');
+        }
+    }, [selectedSeriesName]);
+
+    // 디스플레이 등록
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+    // 필수 입력값 확인
+    const requiredFields = [
+        { value: seriesNum, message: "시리즈를 선택해주세요." },
+        { value: productNum, message: "상품명을 선택해주세요." },
+        { value: displaySize, message: "디스플레이 크기를 입력해주세요." }
+    ];
+
+    // 첫 번째로 비어있는 필드를 찾아서 경고를 띄우고 제출 중단
+    for (let field of requiredFields) {
+        if (!field.value || field.value.trim() === "") {
+            alert(field.message);
+            return; // 값이 없으면 제출 중단
+        }
+    }
         
         const displayVo = {
             productNum: productNum,
@@ -81,8 +139,10 @@ const ProductAddForm = () => {
             console.log(response.data); //수신데이타
         
             if(response.data.result === 'success') {
-                //리다이렉트
-              navigate("/admin/product");
+                setIsSeriesSelected(false); // 리스트 숨기기
+                setSeriesNum(''); // 선택 필드 초기화
+                setProductNum(''); // 선택 필드 초기화
+                setDisplaySize(''); // 입력 필드 초기화
             } else {
                 alert("등록 실패");
             }
@@ -90,6 +150,37 @@ const ProductAddForm = () => {
           }).catch(error => {
             console.log(error);
         }); 
+    }
+
+    // 디스플레이 삭제
+    const handleDisplayDelete = (displayNum) => {
+        // 삭제 확인 메시지
+        const confirmDelete = window.confirm("정말로 삭제하시겠습니까?");
+        if (!confirmDelete) return;
+    
+        // axios 요청으로 서버에 삭제 요청 보내기
+        axios({
+            method: 'delete',
+            url: `${process.env.REACT_APP_API_URL}/api/delete/display/${displayNum}`,
+            responseType: 'json',
+        })
+        .then((response) => {
+            if (response.data.result === 'success') {
+                alert("삭제되었습니다.");
+                // 삭제 후 UI 업데이트 (필요하다면 데이터 다시 불러오기)
+                let newArray = displayList.filter((display) => (
+					display.displayNum !== displayNum
+				));
+
+                setDisplayList(newArray);
+            } else {
+                alert(response.data.message); // 서버에서 반환된 메시지를 사용자에게 알림
+            }
+        })
+        .catch((error) => {
+            console.error("삭제 요청 중 오류 발생:", error);
+            alert("삭제 중 오류가 발생했습니다.");
+        });
     }
 
     return (
@@ -106,7 +197,7 @@ const ProductAddForm = () => {
                                     <li><Link to="/admin/store">매장 관리</Link></li>
                                     <li><Link to="/admin/product">상품 관리</Link></li>
                                     <li><Link to="/admin/user">유저 관리</Link></li>
-                                    <li><Link to="/admin/dilivery">배송 관리</Link></li>
+                                    <li><Link to="/admin/delivery">배송 관리</Link></li>
                                     <li><Link to="/admin/history">판매 관리</Link></li>
                                 </ul>
                             </div>
@@ -114,12 +205,12 @@ const ProductAddForm = () => {
 
                         <div id="product_add_area">
                             <div id="product_new">
-                            <h2 className="hjy-add-link"><Link to="/admin/product/add">시리즈 등록</Link></h2>
-                                    <h2 className="hjy-add-link"><Link to="/admin/product/add2">상품 등록</Link></h2>
-                                    <h2 className="hjy-add-link"><Link to="/admin/product/add3">색상 등록</Link></h2>
-                                    <h2 className="hjy-add-link"><Link to="/admin/product/add4">디스플레이 등록</Link></h2>
-                                    <h2 className="hjy-add-link"><Link to="/admin/product/add5">용량 등록</Link></h2>
-                                    <h2 className="hjy-add-link"><Link to="/admin/product/add6">상품상세 등록</Link></h2>
+                                <h2 className="hjy-add-link"><Link to="/admin/product/add">시리즈 등록</Link></h2>
+                                <h2 className="hjy-add-link"><Link to="/admin/product/add2">상품 등록</Link></h2>
+                                <h2 className="hjy-add-link"><Link to="/admin/product/add3">색상 등록</Link></h2>
+                                <h2 className="hjy-add-link"><Link to="/admin/product/add4">디스플레이 등록</Link></h2>
+                                <h2 className="hjy-add-link"><Link to="/admin/product/add5">용량 등록</Link></h2>
+                                <h2 className="hjy-add-link"><Link to="/admin/product/add6">상품상세 등록</Link></h2>
                                 <div id="product_add_item" className="clearfix hjy-series">
                                     <form onSubmit={handleSubmit}>
                                     <p>디스플레이 등록</p>
@@ -153,8 +244,9 @@ const ProductAddForm = () => {
                                                 type="text" 
                                                 id="product_display" 
                                                 value={displaySize} 
-                                                placeholder="시리즈를 입력하세요" 
+                                                placeholder="디스플레이 크기를 입력하세요" 
                                                 onChange={handleDisplayName}
+                                                disabled={selectedSeriesName === '악세사리'} // 악세사리일 때 비활성화
                                             />
                                         </div>
                                         <div className="hjy_product_add_btnbox">
@@ -167,12 +259,36 @@ const ProductAddForm = () => {
                                         </div>
                                     </form>
                                 </div>
-
-                                
-                            
-                            
                             </div>
                         </div>
+
+                        {/* 시리즈가 선택되었을 때만 테이블 표시 */}
+                        {isSeriesSelected && (
+                            <div className="hjy-seriesList">
+                                <table border="1">
+                                    <thead>
+                                        <tr>
+                                            <th style={{ width: '70px' }}>Display Number</th>
+                                            <th style={{ width: '100px' }}>Series Name</th>
+                                            <th style={{ width: '280px' }}>Product Name</th>
+                                            <th colSpan={3}>Display Size</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {displayList.map((display, index) => (
+                                            <tr key={index}>
+                                                <td>{display.displayNum}</td>
+                                                <td>{display.seriesName}</td>
+                                                <td>{display.productName}</td>
+                                                <td>{display.displaySize}</td>
+                                                <td style={{ width: '40px' }} className="hjy-action-btn"><Link to="/#">수정</Link></td>
+                                                <td style={{ width: '40px' }} className="hjy-action-btn"><button type="button" onClick={() => handleDisplayDelete(display.displayNum)}>삭제</button></td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -181,4 +297,4 @@ const ProductAddForm = () => {
     );
 }
 
-export default ProductAddForm;
+export default ProductAddForm4;

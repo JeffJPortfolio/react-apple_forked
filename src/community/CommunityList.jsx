@@ -66,13 +66,13 @@ const CommunityList = () => {
                                 <div className="hjy-tip-text">
                                     iPhone/ACC
                                 </div>
-                                <form action="" method="">
+                                {/* <form action="" method="">
                                     <div className="hjy-input-container">
                                         <button type="button"><FaSearch /></button>
                                         <label htmlFor="keyword"></label>
                                         <input type="text" id="keyword" name="" value="" placeholder="검색 또는 질문하기"/>
                                     </div>
-                                </form>
+                                </form> */}
                             </div>
                         </div>
 
@@ -117,16 +117,16 @@ const CommunityList = () => {
                                     </div>
                                     <div id="content" className="clearfix">
                                         <div className="hjy-time">
-                                            {communityVo.boardDate}  작성자: {communityVo.id}
+                                            작성일자: {communityVo.boardDate}  작성자: {communityVo.userId}
                                         </div>
                                         <div className="hjy-comment">
-                                            댓글: ~
+                                            댓글: {communityVo.commentCount}
                                             </div>
                                         <div className="hjy-hit">
                                             조회: {communityVo.boardViews}
                                             </div>
                                         <div className="hjy-question">
-                                            질문자: {communityVo.name}
+                                            질문자: {communityVo.userName}
                                         </div>
                                     </div>  
                                 </div>

@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import MainList from './main/MainList.jsx';
+import MainListAcc from './main/MainListAcc.jsx';
 import Search from './search/Search.jsx';
-import Purchase from './main/purchasePage.jsx';
+import PurchasePage from './main/purchasePage.jsx';
 import PurchaseAcc from './main/purchasePageAcc.jsx'
 import JoinForm from './user/JoinForm';
 import LoginForm from './user/LoginForm';
@@ -37,6 +38,9 @@ import ProductAddForm6 from './admin/ProductAddForm6';
 import DeliveryList from './admin/DeliveryList';
 import HistoryList from './admin/HistoryList';
 
+
+import StoreDetail from './main/StoreDetail';
+
 import './css/reset.css';
 
 function App() {
@@ -44,9 +48,10 @@ function App() {
     <BrowserRouter>
         <Routes>
           <Route path='/mainlist' element={<MainList />} />
+          <Route path='/mainlistacc' element={<MainListAcc />} />
           <Route path='/search/:keyword' element={<Search />} /> 
           <Route path='/purchaseAcc' element={<PurchaseAcc />} />
-          <Route path='/purchase' element={<Purchase />} />
+          <Route path='/purchase/:productDetailNum' element={<PurchasePage />} />
 
 
           <Route path='/user/joinform' element={<JoinForm />} />
@@ -81,8 +86,10 @@ function App() {
           <Route path='/admin/product/add4' element={<ProductAddForm4 />} />
           <Route path='/admin/product/add5' element={<ProductAddForm5 />} />
           <Route path='/admin/product/add6' element={<ProductAddForm6 />} />
-          <Route path='/admin/dilivery' element={<DeliveryList />} />
+          <Route path='/admin/delivery' element={<DeliveryList />} />
           <Route path='/admin/history' element={<HistoryList />} />
+
+          <Route path='/store/detail' element={<StoreDetail />} />
         </Routes>
     </BrowserRouter>
   );
